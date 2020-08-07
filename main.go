@@ -1,12 +1,5 @@
 package main
 
-type Logger struct {
-	first *Message
-	last  *Message
-	count int
-	set   Set
-}
-
 /** Initialize your data structure here. */
 func Constructor() Logger {
 	return Logger{nil, nil, 0, Set{}}
@@ -18,6 +11,7 @@ func Constructor() Logger {
 func (this *Logger) ShouldPrintMessage(timestamp int, message string) bool {
 	m := &Message{timestamp: timestamp, message: message}
 
+	// dequeue and remove from set all Expired messages
 	current := this.first
 	for i := 0; i < this.count; i++ {
 		if current == nil {
@@ -30,7 +24,7 @@ func (this *Logger) ShouldPrintMessage(timestamp int, message string) bool {
 		}
 	}
 
-	// if it does not contain the message enqueue it
+	// if the message is new, enqueue it and add it to the set
 	if !this.set.contains(message) {
 		this.Enqueue(m)
 		this.set.add(message)
@@ -39,16 +33,19 @@ func (this *Logger) ShouldPrintMessage(timestamp int, message string) bool {
 	return false
 }
 
-/**
- * Your Logger object will be instantiated and called as such:
- * obj := Constructor();
- * param_1 := obj.ShouldPrintMessage(timestamp,message);
- */
+// LinkedList
 
 type Message struct {
 	next      *Message
 	timestamp int
 	message   string
+}
+
+type Logger struct {
+	first *Message
+	last  *Message
+	count int
+	set   Set
 }
 
 // go to the end of the line
@@ -68,7 +65,6 @@ func (q *Logger) Enqueue(i *Message) {
 }
 
 // first person in line
-// invalidate expired messages
 func (q *Logger) Dequeue() (i *Message) {
 	if q.count == 0 {
 		return nil
@@ -80,7 +76,7 @@ func (q *Logger) Dequeue() (i *Message) {
 	return item
 }
 
-//SET
+// SET
 
 type Set map[string]struct{}
 
